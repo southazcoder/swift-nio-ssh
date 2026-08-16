@@ -46,7 +46,14 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.81.0"),
-        .package(url: "https://github.com/apple/swift-crypto.git", "1.0.0"..<"4.0.0"),
+        // CodeMobile: pinned to the exact upstream commit that fixes
+        // https://github.com/apple/swift-crypto/issues/435 (Crypto's empty
+        // re-export module produces no Mach-O binary under Xcode 26's linker,
+        // which breaks `xcodebuild test` for anything depending on this
+        // package) — not yet in a tagged release, so a version range can't
+        // reach it. Revert to a normal `from:`/`..<` version constraint once
+        // swift-crypto ships a release containing this fix.
+        .package(url: "https://github.com/apple/swift-crypto.git", revision: "1b6b2e274e85105bfa155183145a1dcfd63331f1"),
         .package(url: "https://github.com/apple/swift-atomics.git", from: "1.0.2"),
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
     ],
